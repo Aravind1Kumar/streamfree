@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFree | Watch Movies & series for free</title>
+    <meta name="description" content="Stream your favorite movies and TV shows for free with high quality and no registration required.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-bg"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>StreamFree</span>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search for a movie or TV show..." autocomplete="off">
+                    <svg id="searchIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <div id="results" class="results-dropdown hidden"></div>
+            </div>
+        </header>
+
+        <main id="mainContent">
+            <section id="welcomeScreen" class="hero-section">
+                <h1>Unlock the World of Movies</h1>
+                <p>Search from thousands of titles and start watching instantly. No subscriptions, just free entertainment.</p>
+                <div class="trending-hint">Try searching for "Inception" or "The Last of Us"</div>
+            </section>
+
+            <section id="playerScreen" class="hidden">
+                <div class="player-container">
+                    <div class="video-frame">
+                        <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="movie-details">
+                    <div class="details-left">
+                        <img id="moviePoster" src="" alt="Poster" class="poster-large">
+                    </div>
+                    <div class="details-right">
+                        <h2 id="movieTitle"></h2>
+                        <div class="meta-info">
+                            <span id="movieType"></span>
+                            <span class="dot">•</span>
+                            <span id="movieYear"></span>
+                        </div>
+                        <p id="movieCast" class="cast-text"></p>
+                        <div class="actions">
+                            <button id="backBtn" class="secondary-btn">Search Again</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 StreamFree. Strictly for educational purposes. All content is powered by community embeds.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
