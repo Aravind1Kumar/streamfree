@@ -284,6 +284,22 @@ footer {
     font-size: 0.8rem;
 }
 
+.collab-strip {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.collab-strip a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.collab-strip a:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 768px) {
     .movie-details {
         flex-direction: column;
