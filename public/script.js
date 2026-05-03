@@ -107,7 +107,7 @@ function selectMovie(movie) {
     if (isTvSeries) {
         ottControls.classList.remove('hidden');
         renderTvControls(imdbId);
-        videoPlayer.src = `https://vidsrc.me/embed/tv?imdb=${imdbId}&season=1&episode=1`;
+        videoPlayer.src = `https://vidsrc.to/embed/tv/${imdbId}/1/1`;
     } else {
         ottControls.classList.add('hidden');
         videoPlayer.src = `https://streamimdb.me/embed/${imdbId}`;
@@ -186,14 +186,14 @@ function renderEpisodes(season, defaultActiveEpisode = null) {
         `;
     }).join('');
     
-    document.querySelectorAll('.episode-card').forEach(card => {
+    listHtml.querySelectorAll('.episode-card').forEach(card => {
         card.addEventListener('click', () => {
-            document.querySelectorAll('.episode-card').forEach(c => c.classList.remove('active'));
+            listHtml.querySelectorAll('.episode-card').forEach(c => c.classList.remove('active'));
             card.classList.add('active');
             
             const s = card.getAttribute('data-s');
             const e = card.getAttribute('data-e');
-            videoPlayer.src = `https://vidsrc.me/embed/tv?imdb=${currentMovie.id}&season=${s}&episode=${e}`;
+            videoPlayer.src = `https://vidsrc.to/embed/tv/${currentMovie.id}/${s}/${e}`;
             
             // Scroll to top to see player (especially on mobile)
             window.scrollTo({ top: 0, behavior: 'smooth' });

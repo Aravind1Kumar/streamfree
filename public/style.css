@@ -346,9 +346,20 @@ header {
     text-align: center;
 }
 
-.episode-card:hover, .episode-card.active {
+.episode-card.active {
     background: var(--primary);
     border-color: var(--primary);
+}
+
+@media (hover: hover) {
+    .episode-card:hover {
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+    
+    .episode-card:hover .episode-number {
+        color: rgba(255, 255, 255, 0.8);
+    }
 }
 
 .episode-number {
@@ -358,7 +369,7 @@ header {
     transition: color 0.2s;
 }
 
-.episode-card:hover .episode-number, .episode-card.active .episode-number {
+.episode-card.active .episode-number {
     color: rgba(255, 255, 255, 0.8);
 }
 
