@@ -10,13 +10,13 @@ const movieCast = document.getElementById('movieCast');
 const moviePoster = document.getElementById('moviePoster');
 const backBtn = document.getElementById('backBtn');
 
-const tvControls = document.getElementById('tvControls');
-const seasonSelect = document.getElementById('seasonSelect');
-const episodeSelect = document.getElementById('episodeSelect');
-const updateEpisodeBtn = document.getElementById('updateEpisodeBtn');
+const ottControls = document.getElementById('ottControls');
+const seasonDropdown = document.getElementById('seasonDropdown');
+const episodesList = document.getElementById('episodesList');
 
 let searchTimeout;
 let currentMovie = null;
+let showEpisodes = [];
 
 // Event Listeners
 searchInput.addEventListener('input', (e) => {
@@ -45,14 +45,8 @@ backBtn.addEventListener('click', () => {
     welcomeScreen.classList.remove('hidden');
     videoPlayer.src = '';
     currentMovie = null;
+    showEpisodes = [];
     window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-updateEpisodeBtn.addEventListener('click', () => {
-    if (!currentMovie) return;
-    const s = seasonSelect.value || 1;
-    const e = episodeSelect.value || 1;
-    videoPlayer.src = `https://vidsrc.me/embed/tv?imdb=${currentMovie.id}&season=${s}&episode=${e}`;
 });
 
 async function performSearch(query) {
@@ -111,13 +105,11 @@ function selectMovie(movie) {
     const isTvSeries = movie.qid === 'tvSeries' || movie.qid === 'tvMiniSeries';
     
     if (isTvSeries) {
-        tvControls.classList.remove('hidden');
-        seasonSelect.value = 1;
-        episodeSelect.value = 1;
-        // For TV shows, use vidsrc format which explicitly supports seasons and episodes
+        ottControls.classList.remove('hidden');
+        renderTvControls(imdbId);
         videoPlayer.src = `https://vidsrc.me/embed/tv?imdb=${imdbId}&season=1&episode=1`;
     } else {
-        tvControls.classList.add('hidden');
+        ottControls.classList.add('hidden');
         videoPlayer.src = `https://streamimdb.me/embed/${imdbId}`;
     }
     
@@ -136,3 +128,76 @@ function selectMovie(movie) {
     searchInput.value = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+async function fetchTvDetails(imdbId) {
+    try {
+        const lookupRes = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${imdbId}`);
+        if (!lookupRes.ok) throw new Error('Show not found');
+        const show = await lookupRes.json();
+        
+        const epRes = await fetch(`https://api.tvmaze.com/shows/${show.id}/episodes`);
+        const episodes = await epRes.json();
+        
+        return episodes;
+    } catch (e) {
+        console.error("Error fetching episodes:", e);
+        return [];
+    }
+}
+
+async function renderTvControls(imdbId) {
+    seasonDropdown.innerHTML = '<option>Loading episodes...</option>';
+    episodesList.innerHTML = '';
+    
+    showEpisodes = await fetchTvDetails(imdbId);
+    if (!showEpisodes || showEpisodes.length === 0) {
+        seasonDropdown.innerHTML = '<option>No episodes found</option>';
+        return;
+    }
+    
+    // Extract unique seasons
+    const seasons = [...new Set(showEpisodes.map(ep => ep.season))];
+    
+    seasonDropdown.innerHTML = seasons.map(s => `<option value="${s}">Season ${s}</option>`).join('');
+    
+    // Remove old event listener if exists to prevent duplicates (by cloning node)
+    const newDropdown = seasonDropdown.cloneNode(true);
+    seasonDropdown.parentNode.replaceChild(newDropdown, seasonDropdown);
+    
+    newDropdown.addEventListener('change', (e) => {
+        renderEpisodes(parseInt(e.target.value));
+    });
+    
+    // Initial render
+    renderEpisodes(seasons[0], 1);
+}
+
+function renderEpisodes(season, defaultActiveEpisode = null) {
+    const seasonEpisodes = showEpisodes.filter(ep => ep.season === season);
+    const listHtml = document.getElementById('episodesList'); // Re-query just in case
+    
+    listHtml.innerHTML = seasonEpisodes.map(ep => {
+        const isActive = (defaultActiveEpisode === ep.number) ? 'active' : '';
+        return `
+            <div class="episode-card ${isActive}" data-s="${ep.season}" data-e="${ep.number}">
+                <div class="episode-number">Episode ${ep.number}</div>
+                <div class="episode-title" title="${ep.name}">${ep.name}</div>
+            </div>
+        `;
+    }).join('');
+    
+    document.querySelectorAll('.episode-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.episode-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            
+            const s = card.getAttribute('data-s');
+            const e = card.getAttribute('data-e');
+            videoPlayer.src = `https://vidsrc.me/embed/tv?imdb=${currentMovie.id}&season=${s}&episode=${e}`;
+            
+            // Scroll to top to see player (especially on mobile)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+}
+

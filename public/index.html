@@ -57,16 +57,11 @@
                         </div>
                         <p id="movieCast" class="cast-text"></p>
                         
-                        <div id="tvControls" class="tv-controls hidden">
-                            <div class="input-group">
-                                <label for="seasonSelect">Season</label>
-                                <input type="number" id="seasonSelect" min="1" value="1" class="episode-input">
+                        <div id="ottControls" class="ott-controls hidden">
+                            <div class="season-selector">
+                                <select id="seasonDropdown" class="season-dropdown"></select>
                             </div>
-                            <div class="input-group">
-                                <label for="episodeSelect">Episode</label>
-                                <input type="number" id="episodeSelect" min="1" value="1" class="episode-input">
-                            </div>
-                            <button id="updateEpisodeBtn" class="primary-btn">Play</button>
+                            <div id="episodesList" class="episodes-list"></div>
                         </div>
 
                         <div class="actions">
