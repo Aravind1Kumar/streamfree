@@ -10,7 +10,13 @@ const movieCast = document.getElementById('movieCast');
 const moviePoster = document.getElementById('moviePoster');
 const backBtn = document.getElementById('backBtn');
 
+const tvControls = document.getElementById('tvControls');
+const seasonSelect = document.getElementById('seasonSelect');
+const episodeSelect = document.getElementById('episodeSelect');
+const updateEpisodeBtn = document.getElementById('updateEpisodeBtn');
+
 let searchTimeout;
+let currentMovie = null;
 
 // Event Listeners
 searchInput.addEventListener('input', (e) => {
@@ -38,7 +44,15 @@ backBtn.addEventListener('click', () => {
     playerScreen.classList.add('hidden');
     welcomeScreen.classList.remove('hidden');
     videoPlayer.src = '';
+    currentMovie = null;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+updateEpisodeBtn.addEventListener('click', () => {
+    if (!currentMovie) return;
+    const s = seasonSelect.value || 1;
+    const e = episodeSelect.value || 1;
+    videoPlayer.src = `https://vidsrc.me/embed/tv?imdb=${currentMovie.id}&season=${s}&episode=${e}`;
 });
 
 async function performSearch(query) {
@@ -88,14 +102,25 @@ function renderResults(movies) {
 }
 
 function selectMovie(movie) {
+    currentMovie = movie;
     resultsDiv.classList.add('hidden');
     welcomeScreen.classList.add('hidden');
     playerScreen.classList.remove('hidden');
 
     const imdbId = movie.id;
-    const streamUrl = `https://streamimdb.me/embed/${imdbId}`;
+    const isTvSeries = movie.qid === 'tvSeries' || movie.qid === 'tvMiniSeries';
     
-    videoPlayer.src = streamUrl;
+    if (isTvSeries) {
+        tvControls.classList.remove('hidden');
+        seasonSelect.value = 1;
+        episodeSelect.value = 1;
+        // For TV shows, use vidsrc format which explicitly supports seasons and episodes
+        videoPlayer.src = `https://vidsrc.me/embed/tv?imdb=${imdbId}&season=1&episode=1`;
+    } else {
+        tvControls.classList.add('hidden');
+        videoPlayer.src = `https://streamimdb.me/embed/${imdbId}`;
+    }
+    
     movieTitle.textContent = movie.l;
     movieType.textContent = (movie.q || 'Movie').toUpperCase();
     movieYear.textContent = movie.y || '';
